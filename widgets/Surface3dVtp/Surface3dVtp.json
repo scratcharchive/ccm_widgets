@@ -1,0 +1,20 @@
+{
+    "type": "Surface3dVtp",
+    "description": "Vtk surface rendering from .vtp file",
+    "propsKeys": [],
+    "javaScriptStateKeys": ["vtp_path", "download_from", "vtp_array_name_for_scalars", "vtp_array_component_for_scalars"],
+    "pythonStateKeys": ["status", "status_message", "vertices", "faces", "scalars"],
+    "defaultProps": {
+        "vtp_path": "sha1://22f242215ed2625db02b3a1f9d89364defa013f6/quas3.vtp",
+        "download_from": "spikeforest.public",
+        "vtp_array_name_for_scalars": "value",
+        "vtp_array_component_for_scalars": 0,
+        "preset_color_map_name": "erdc_rainbow_bright"
+    },
+    "alternateProps": {
+        "triangle": {
+            "vtp_path": "sha1://9bc22a4ff5cb6b6ac064b03f54b20c6880aa4a28/Triangle.vtp",
+            "download_from": "spikeforest.public"
+        }
+    }
+}

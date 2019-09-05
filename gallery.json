@@ -1,0 +1,26 @@
+{
+    "widgets": [
+        {
+            "type": "Surface3dVtp",
+            "title": "Surface3dVtp - quas3.vtp",
+            "key": "surface3dvtp-quas3",
+            "props": {
+                "vtp_path": "sha1://22f242215ed2625db02b3a1f9d89364defa013f6/quas3.vtp",
+                "download_from": "spikeforest.public",
+                "vtp_array_name_for_scalars": "value",
+                "vtp_array_component_for_scalars": 0,
+                "preset_color_map_name": "erdc_rainbow_bright"
+            }
+        },
+        {
+            "type": "Surface3d",
+            "title": "Surface3d - triangle",
+            "key": "surface3d-triangle",
+            "props": {
+                "vertices": [[0, 0, 0], [0, 1, 0], [1, 0, 0]],
+                "faces": [3, 0, 1, 2],
+                "scalars": [0, 1, 2]
+            }
+        }
+    ]
+}
