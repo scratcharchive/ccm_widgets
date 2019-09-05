@@ -1,4 +1,4 @@
-# Reactopya examples
+# CCM widgets
 
 A collection of [reactopya](https://github.com/flatironinstitute/reactopya) widgets relevant to research at the Center for Computational Mathematics, Flatiron Institute.
 
