@@ -10,7 +10,7 @@
 Install the ccm_widgets Python package:
 
 ```
-pip install ccm_widgets==0.1.0
+pip install ccm_widgets==0.1.1
 ```
 
 Then, depending on how you intend to use the library, use one or more of the following methods.
