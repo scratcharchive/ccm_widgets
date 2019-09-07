@@ -37,6 +37,6 @@ RUN jupyter nbextension enable reactopya_jup --py --sys-prefix
 
 #########################################
 ### Install ccm_widgets
-RUN pip install ccm_widgets==0.1.1
+RUN pip install ccm_widgets==0.2.0
 
 CMD echo "See instructions.txt on how to run this container"
