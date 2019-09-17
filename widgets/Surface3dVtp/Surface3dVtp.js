@@ -9,18 +9,20 @@ export default class Surface3dVtp extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // to python:
+            // javascript state:
             vtp_path: this.props.vtp_path || '',
             download_from: this.props.download_from,
-            vtp_array_name_for_scalars: this.props.vtp_array_name_for_scalars,
-            vtp_array_component_for_scalars: this.props.vtp_array_component_for_scalars,
+            scalar_info: this.props.scalar_info,
+            vector_field_info: this.props.vector_field_info,
+            arrow_subsample_factor: this.props.arrow_subsample_factor,
 
-            // from python:
+            // python state:
             status: '',
             status_message: '',
             vertices: null,
             faces: null,
-            scalars: null
+            scalars: null,
+            arrows: null
         }
     }
     componentDidMount() {
@@ -36,7 +38,13 @@ export default class Surface3dVtp extends Component {
     render() {
         return (
             <RespectStatus {...this.state}>
-                <Surface3d {...this.props} vertices={this.state.vertices} faces={this.state.faces} scalars={this.state.scalars} />
+                <Surface3d
+                    {...this.props}
+                    vertices={this.state.vertices}
+                    faces={this.state.faces}
+                    scalars={this.state.scalars}
+                    arrows={this.state.arrows}
+                />
             </RespectStatus>
         )
     }

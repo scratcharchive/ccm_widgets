@@ -14,8 +14,10 @@ class Surface3dVtp(Component):
 
         vtp_path = state.get('vtp_path', None)
         download_from = state.get('download_from', None)
-        vtp_array_name_for_scalars = state.get('vtp_array_name_for_scalars', None)
-        vtp_array_component_for_scalars = state.get('vtp_array_component_for_scalars', None)
+        scalar_info = state.get('scalar_info', None)
+        vector_field_info = state.get('vector_field_info', None)
+        arrow_subsample_factor = state.get('arrow_subsample_factor', None)
+
         if not vtp_path:
             self.set_python_state(dict(status='error', status_message='No vtp_path'))
             return
@@ -31,15 +33,29 @@ class Surface3dVtp(Component):
         vertices = vtk_to_numpy(X.GetPoints().GetData()).T
         faces = vtk_to_numpy(X.GetPolys().GetData())
 
-        if vtp_array_name_for_scalars:
-            scalars = vtk_to_numpy(X.GetPointData().GetArray(vtp_array_name_for_scalars))
-            scalars = scalars[:, vtp_array_component_for_scalars]
+        if scalar_info:
+            scalars = vtk_to_numpy(X.GetPointData().GetArray(scalar_info['name']))
+            scalars = scalars[:, scalar_info['component']]
         else:
             scalars = None
+
+        if vector_field_info:
+            vector_field = vtk_to_numpy(X.GetPointData().GetArray(vector_field_info['name']))
+            vector_field = vector_field[:, vector_field_info['components']]
+            arrows = [
+                dict(
+                    start=vertices[:, j] - vector_field[j, :].T / 2,
+                    end=vertices[:, j] + vector_field[j, :].T / 2
+                )
+                for j in range(0, vector_field.shape[0], arrow_subsample_factor)
+            ]                
+        else:
+            arrows = None
             
         self.set_python_state(dict(
             status='finished',
             vertices=vertices,
             faces=faces,
-            scalars=scalars
+            scalars=scalars,
+            arrows=arrows
         ))

@@ -38,14 +38,18 @@ class HBoxInner extends Component {
         const num = this.props.children.length;
 
         let width0 = width / num;
+        let height0 = undefined;
+        if (this.props.fullBrowser) {
+            height0 = document.body.clientHeight;
+        }
         return (
-            <table>
+            <table style={{borderCollapse: "collapse"}}>
                 <tbody>
                     <tr>
                         {
                             (this.props.children || []).map((Child, ii) => (
-                                <td key={ii}>
-                                    <Child.type {...Child.props} width={width0} />
+                                <td key={ii} style={{padding: 0}}>
+                                    <Child.type {...Child.props} width={width0} height={height0} />
                                 </td>
                             ))
                         }    

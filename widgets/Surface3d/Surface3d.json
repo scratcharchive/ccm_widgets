@@ -1,4 +1,5 @@
 {
+    "project_name": "ccm_widgets",
     "type": "Surface3d",
     "description": "Vtk surface rendering",
     "propsKeys": [],

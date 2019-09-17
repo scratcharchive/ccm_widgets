@@ -37,12 +37,12 @@ class VBoxInner extends Component {
         const { width } = this.props;
 
         return (
-            <table>
+            <table style={{borderCollapse: "collapse"}}>
                 <tbody>
                     {
                         (this.props.children || []).map((Child, ii) => (
                             <tr key={ii}>
-                                <td><Child.type {...Child.props} width={width} /></td>
+                                <td style={{padding: 0}}><Child.type {...Child.props} width={width} /></td>
                             </tr>
                         ))
                     }    

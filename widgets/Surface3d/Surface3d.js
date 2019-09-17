@@ -38,7 +38,8 @@ class Surface3dInner extends VtkComponent {
         if (
             (this.props.vertices !== prevProps.vertices) ||
             (this.props.faces !== prevProps.faces) ||
-            (this.props.scalars !== prevProps.scalars)
+            (this.props.scalars !== prevProps.scalars) ||
+            (this.props.arrows !== prevProps.arrows)
         ) {
             this.updateSurface();
         }
@@ -48,10 +49,18 @@ class Surface3dInner extends VtkComponent {
             let opts = {
                 vectorComponent: this.props.vector_component,
                 colorByArrayName: this.props.color_by_array_name,
-                presetColorMapName: this.props.preset_color_map_name
+                presetColorMapName: this.props.preset_color_map_name,
+                arrowLengthFactor: this.props.arrow_length_factor,
+                arrowWidth: this.props.arrow_width
             }
             this.setState({
-                surface: new Surface(this.props.vertices, this.props.faces, this.props.scalars, opts)
+                surface: new Surface(
+                    this.props.vertices,
+                    this.props.faces,
+                    this.props.scalars,
+                    this.props.arrows,
+                    opts
+                )
             })
         }
         else {
@@ -67,8 +76,11 @@ class Surface3dInner extends VtkComponent {
     }
     vtkSize(div) {
         let width = this.props.width;
-        let height = this.props.height || width;
-        height = Math.min(500, height);
+        let height = this.props.height;
+        if (!this.props.height) {
+            height = this.props.width;
+            height = Math.min(500, height);
+        }
         return [width, height];
     }
     vtkRender(div) {

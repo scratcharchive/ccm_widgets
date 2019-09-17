@@ -7,19 +7,61 @@
             "props": {
                 "vtp_path": "sha1://22f242215ed2625db02b3a1f9d89364defa013f6/quas3.vtp",
                 "download_from": "spikeforest.public",
-                "vtp_array_name_for_scalars": "value",
-                "vtp_array_component_for_scalars": 0,
-                "preset_color_map_name": "erdc_rainbow_bright"
+                "scalar_info": {
+                    "name": "value",
+                    "component": 0
+                },
+                "vector_field_info": {
+                    "name": "value",
+                    "components": [0, 1, 2]
+                },
+                "preset_color_map_name": "erdc_rainbow_bright",
+                "arrow_subsample_factor": 250,
+                "arrow_width": 0.3,
+                "arrow_length_factor": 0.3
             }
         },
         {
             "type": "Surface3d",
-            "title": "Surface3d - triangle",
-            "key": "surface3d-triangle",
+            "title": "Test arrows 1",
+            "key": "test-arrows",
             "props": {
-                "vertices": [[0, 0, 0], [0, 1, 0], [1, 0, 0]],
-                "faces": [3, 0, 1, 2],
-                "scalars": [0, 1, 2]
+                "vertices": [
+                    [
+                        0,
+                        0,
+                        0
+                    ],
+                    [
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        0,
+                        2,
+                        0
+                    ]
+                ],
+                "faces": [
+                    3,
+                    0,
+                    1,
+                    2
+                ],
+                "scalars": [
+                    0,
+                    1,
+                    2
+                ],
+                "arrows": [
+                    {
+                        "start": [0, 0, 0],
+                        "end": [1, 0, 0]
+                    }
+                ],
+                "arrow_length_factor": 1,
+                "arrow_width": 1
             }
         }
     ]
