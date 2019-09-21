@@ -34,7 +34,6 @@ class Surface3dInner extends VtkComponent {
         this.updateSurface();
     }
     componentDidUpdate(prevProps) {
-        this.pythonInterface.update();
         if (
             (this.props.vertices !== prevProps.vertices) ||
             (this.props.faces !== prevProps.faces) ||

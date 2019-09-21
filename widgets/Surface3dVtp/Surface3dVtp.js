@@ -10,11 +10,11 @@ export default class Surface3dVtp extends Component {
         super(props);
         this.state = {
             // javascript state:
-            vtp_path: this.props.vtp_path || '',
-            download_from: this.props.download_from,
-            scalar_info: this.props.scalar_info,
-            vector_field_info: this.props.vector_field_info,
-            arrow_subsample_factor: this.props.arrow_subsample_factor,
+            vtp_path: null,
+            download_from: null,
+            scalar_info: null,
+            vector_field_info: null,
+            arrow_subsample_factor: null,
 
             // python state:
             status: '',
@@ -26,11 +26,16 @@ export default class Surface3dVtp extends Component {
         }
     }
     componentDidMount() {
+        console.log('--------------- test 2', this.props.reactopyaModel.getPythonState());
         this.pythonInterface = new PythonInterface(this, config);
+        this.pythonInterface.setState({
+            vtp_path: this.props.vtp_path || '',
+            download_from: this.props.download_from,
+            scalar_info: this.props.scalar_info,
+            vector_field_info: this.props.vector_field_info,
+            arrow_subsample_factor: this.props.arrow_subsample_factor
+        });
         this.pythonInterface.start();
-    }
-    componentDidUpdate(prevProps, prevState) {
-        this.pythonInterface.update();
     }
     componentWillUnmount() {
         this.pythonInterface.stop();

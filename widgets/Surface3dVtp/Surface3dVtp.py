@@ -1,16 +1,14 @@
-from reactopya import Component
 from mountaintools import client as mt
-import base64
 from vtk.util.numpy_support import vtk_to_numpy
 from vtk import vtkXMLPolyDataReader
 
 
-class Surface3dVtp(Component):
+class Surface3dVtp:
     def __init__(self):
         super().__init__()
 
     def javascript_state_changed(self, prev_state, state):
-        self.set_python_state(dict(status='running', status_message='Running'))
+        self.set_state(dict(status='running', status_message='Running'))
 
         vtp_path = state.get('vtp_path', None)
         download_from = state.get('download_from', None)
@@ -19,7 +17,7 @@ class Surface3dVtp(Component):
         arrow_subsample_factor = state.get('arrow_subsample_factor', None)
 
         if not vtp_path:
-            self.set_python_state(dict(status='error', status_message='No vtp_path'))
+            self.set_state(dict(status='error', status_message='No vtp_path'))
             return
         
         if download_from:
@@ -52,7 +50,7 @@ class Surface3dVtp(Component):
         else:
             arrows = None
             
-        self.set_python_state(dict(
+        self.set_state(dict(
             status='finished',
             vertices=vertices,
             faces=faces,

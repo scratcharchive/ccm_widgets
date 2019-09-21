@@ -2,9 +2,6 @@
     "project_name": "ccm_widgets",
     "type": "Surface3dVtp",
     "description": "Vtk surface rendering from .vtp file",
-    "propsKeys": [],
-    "javaScriptStateKeys": ["vtp_path", "download_from", "scalar_info", "vector_field_info", "arrow_subsample_factor"],
-    "pythonStateKeys": ["status", "status_message", "vertices", "faces", "scalars", "arrows"],
     "defaultProps": {
         "vtp_path": "sha1://22f242215ed2625db02b3a1f9d89364defa013f6/quas3.vtp",
         "download_from": "spikeforest.public",
