@@ -26,7 +26,6 @@ export default class Surface3dVtp extends Component {
         }
     }
     componentDidMount() {
-        console.log('--------------- test 2', this.props.reactopyaModel.getPythonState());
         this.pythonInterface = new PythonInterface(this, config);
         this.pythonInterface.setState({
             vtp_path: this.props.vtp_path || '',
