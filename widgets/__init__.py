@@ -6,3 +6,4 @@ from .HBox import HBox
 from .VBox import VBox
 from .Tabs import Tabs
 from .Accordion import Accordion
+from .SectorPlot import SectorPlot

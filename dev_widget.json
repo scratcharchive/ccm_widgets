@@ -1,5 +1,26 @@
 {
+    "widget1": {
+        "type": "SectorPlot",
+        "title": "SectorPlot",
+        "key": "SectorPlot",
+        "props": {
+            "data_samples": [[0, 1, 2, 3], [0, 2, 4, 6], [0, 3, 6, 9], [0, 4, 8, 12]],
+            "data_range": "auto",
+            "theta_range": [ -0.6283185307179586, 0.6283185307179586 ]
+        }
+    },
     "widget": {
+        "type": "SectorPlot",
+        "title": "SectorPlot",
+        "key": "SectorPlot",
+        "props": {
+            "data_samples_path": "sha1://6455e1df7a470594c19dc1a4bedd2186f8b76a5f/test_for_jfm_zz2.npy",
+            "download_from": "spikeforest.public",
+            "data_range": "auto",
+            "theta_range": [ -0.6283185307179586, 0.6283185307179586 ]
+        }
+    },
+    "widget3": {
         "type": "Surface3dVtp",
         "title": "Surface3dVtp - quas3.vtp",
         "key": "surface3dvtp-quas3",

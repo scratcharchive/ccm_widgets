@@ -1,0 +1,6 @@
+{
+    "project_name": "ccm_widgets",
+    "type": "SectorPlot",
+    "description": "Sector plot",
+    "defaultProps": {}
+}

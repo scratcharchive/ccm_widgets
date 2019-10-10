@@ -1,4 +1,4 @@
-export function CanvasPainter(context2d, canvasWidget) {
+export function CanvasPainter(context2d, canvasLayer) {
     var that = this;
     var ctx = context2d;
 
@@ -9,11 +9,11 @@ export function CanvasPainter(context2d, canvasWidget) {
     let m_height = 0;
     let m_use_coords = false;
 
-    this.pen = function () { return clone(m_pen); };
+    this.pen = function () { return shallowClone(m_pen); };
     this.setPen = function (pen) { setPen(pen); };
-    this.font = function () { return clone(m_font); };
+    this.font = function () { return shallowClone(m_font); };
     this.setFont = function (font) { setFont(font); };
-    this.brush = function () { return clone(m_brush); };
+    this.brush = function () { return shallowClone(m_brush); };
     this.setBrush = function (brush) { setBrush(brush); };
     this.useCoords = function() { m_use_coords = true; };
     this.usePixels = function() { m_use_coords = false; };
@@ -31,6 +31,13 @@ export function CanvasPainter(context2d, canvasWidget) {
         return _clearRect(0, 0, m_width, m_height);
     }
     this.clearRect = function (x, y, W, H) {
+        if (typeof(x) === 'object') {
+            let a = x;
+            x = a[0];
+            y = a[1];
+            W = a[2];
+            H = a[3];
+        }
         let a = transformXYWH(x, y, W, H);
         return _clearRect(a[0], a[1], a[2], a[3]);
     };
@@ -39,6 +46,14 @@ export function CanvasPainter(context2d, canvasWidget) {
     }
 
     this.fillRect = function (x, y, W, H, brush) {
+        if (typeof(x) === 'object') {
+            let a = x;
+            brush = y;
+            x = a[0];
+            y = a[1];
+            W = a[2];
+            H = a[3];
+        }
         let a = transformXYWH(x, y, W, H);
         return _fillRect(a[0], a[1], a[2], a[3], brush);
     }
@@ -56,6 +71,13 @@ export function CanvasPainter(context2d, canvasWidget) {
     };
 
     this.drawRect = function (x, y, W, H) {
+        if (typeof(x) === 'object') {
+            let a = x;
+            x = a[0];
+            y = a[1];
+            W = a[2];
+            H = a[3];
+        }
         let a = transformXYWH(x, y, W, H);
         return _drawRect(a[0], a[1], a[2], a[3]);
     }
@@ -92,6 +114,9 @@ export function CanvasPainter(context2d, canvasWidget) {
             x = rect[0] + rect[2];
             textAlign = 'right';
         }
+        else {
+            console.error('Missing horizontal alignment in drawText');
+        }
 
         if (alignment.AlignTop) {
             y = rect[1];
@@ -104,6 +129,9 @@ export function CanvasPainter(context2d, canvasWidget) {
         else if (alignment.AlignVCenter) {
             y = rect[1] + rect[3] / 2;
             textBaseline = 'middle';
+        }
+        else {
+            console.error('Missing vertical alignment in drawText');
         }
 
         ctx.font = m_font['pixel-size'] + 'px ' + m_font.family;
@@ -166,15 +194,15 @@ export function CanvasPainter(context2d, canvasWidget) {
     }
 
     function setPen(pen) {
-        m_pen = clone(pen);
+        m_pen = shallowClone(pen);
     }
 
     function setFont(font) {
-        m_font = clone(font);
+        m_font = shallowClone(font);
     }
 
     function setBrush(brush) {
-        m_brush = clone(brush);
+        m_brush = shallowClone(brush);
     }
 
     function to_color(col) {
@@ -202,28 +230,28 @@ export function CanvasPainter(context2d, canvasWidget) {
         return [Math.min(pt1[0], pt2[0]), Math.min(pt1[1], pt2[1]), Math.abs(pt2[0] - pt1[0]), Math.abs(pt2[1] - pt1[1])];
     }
     function transformXY(x, y) {
+        const margins = canvasLayer.margins();
         if (m_use_coords) {
-            const xr = canvasWidget.coordXRange();
-            const yr = canvasWidget.coordYRange();
-            const margins = canvasWidget.margins();
-            let W = canvasWidget.width() - margins[0] - margins[1];
-            let H = canvasWidget.height() - margins[2] - margins[3];
-            const xextent = xr[1] - xr[0];
-            const yextent = yr[1] - yr[0];
-            if (canvasWidget.preserveAspectRatio()) {
-                if ((W * yextent > H * xextent) && (yextent)) {
-                    W = H * xextent / yextent;
-                }
-                else if ((H * xextent > W * yextent) && (xextent)) {
-                    H = W * yextent / xextent;
-                }
-            }
+            const xr = canvasLayer.coordXRange();
+            const yr = canvasLayer.coordYRange();
+            let W = canvasLayer.width() - margins[0] - margins[1];
+            let H = canvasLayer.height() - margins[2] - margins[3];
+            // const xextent = xr[1] - xr[0];
+            // const yextent = yr[1] - yr[0];
+            // if (canvasLayer.preserveAspectRatio()) {
+            //     if ((W * yextent > H * xextent) && (yextent)) {
+            //         W = H * xextent / yextent;
+            //     }
+            //     else if ((H * xextent > W * yextent) && (xextent)) {
+            //         H = W * yextent / xextent;
+            //     }
+            // }
             const xpct = (x - xr[0]) / (xr[1] - xr[0]);
             const ypct = 1 - (y - yr[0]) / (yr[1] - yr[0]);
             return [margins[0] + W * xpct, margins[2] + H * ypct];
         }
         else {
-            return [x, y];
+            return [margins[0] + x, margins[2] + y];
         }
     }
 }
@@ -305,41 +333,70 @@ export function MouseHandler() {
     let m_drag_anchor = null;
     let m_drag_pos = null;
     let m_drag_rect = null;
+    let m_last_report_drag = new Date();
+    let m_scheduled_report_drag_X = null;
 
     function report(name, X) {
-        drag_functionality(name, X);
+        if (name == 'drag') {
+            let elapsed = (new Date()) - m_last_report_drag;
+            if (elapsed < 50) {
+                schedule_report_drag(X, 50 - elapsed + 10);
+                return;
+            }
+            m_last_report_drag = new Date();
+        }
         for (let i in m_handlers[name]) {
             m_handlers[name][i](X);
         }
+        drag_functionality(name, X);
+    }
+
+    function schedule_report_drag(X, timeout) {
+        if (m_scheduled_report_drag_X) {
+            m_scheduled_report_drag_X = X;
+            return;
+        }
+        else {
+            m_scheduled_report_drag_X = X;
+            setTimeout(() => {
+                let X2 = m_scheduled_report_drag_X;
+                m_scheduled_report_drag_X = null;
+                report('drag', X2);
+            }, timeout)
+        }
+        
     }
 
     function drag_functionality(name, X) {
         if (name == 'press') {
             m_dragging = false;
-            m_drag_anchor = clone(X.pos);
+            m_drag_anchor = cloneSimpleArray(X.pos);
             m_drag_pos = null;
         }
         else if (name == 'release') {
             if (m_dragging) {
-                report('drag_release', { anchor: clone(m_drag_anchor), pos: clone(m_drag_pos), rect: clone(m_drag_rect) });
+                report('drag_release', { anchor: cloneSimpleArray(m_drag_anchor), pos: cloneSimpleArray(m_drag_pos), rect: cloneSimpleArray(m_drag_rect) });
             }
             m_dragging = false;
         }
         if ((name === 'move') && (X.buttons === 1)) {
             // move with left button
             if (m_dragging) {
-                m_drag_pos = clone(X.pos);
+                m_drag_pos = cloneSimpleArray(X.pos);
             }
             else {
-                m_dragging = true;
                 if (!m_drag_anchor) {
-                    m_drag_anchor = clone(X.pos);
+                    m_drag_anchor = cloneSimpleArray(X.pos);
                 }
-                m_drag_pos = clone(X.pos);
+                const tol = 4;
+                if ((Math.abs(X.pos[0] - m_drag_anchor[0]) > tol) || (Math.abs(X.pos[1] - m_drag_anchor[1]) > tol)) {
+                    m_dragging = true;
+                    m_drag_pos = cloneSimpleArray(X.pos);
+                }
             }
             if (m_dragging) {
                 m_drag_rect = [Math.min(m_drag_anchor[0], m_drag_pos[0]), Math.min(m_drag_anchor[1], m_drag_pos[1]), Math.abs(m_drag_pos[0] - m_drag_anchor[0]), Math.abs(m_drag_pos[1] - m_drag_anchor[1])];
-                report('drag', { anchor: clone(m_drag_anchor), pos: clone(m_drag_pos), rect: clone(m_drag_rect) });
+                report('drag', { anchor: cloneSimpleArray(m_drag_anchor), pos: cloneSimpleArray(m_drag_pos), rect: cloneSimpleArray(m_drag_rect) });
             }
         }
     }
@@ -370,3 +427,12 @@ export function MouseHandler() {
 function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
+
+function shallowClone(obj) {
+    return Object.assign({}, obj);
+}
+
+function cloneSimpleArray(x) {
+    return x.slice(0);
+}
+
