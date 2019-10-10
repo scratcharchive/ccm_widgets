@@ -192,6 +192,7 @@ class SectorPlotBase extends Component {
                 layers={this._allLayers}
                 width={width}
                 height={height}
+                menuOpts={{exportSvg: true}}
             />
         )
     }

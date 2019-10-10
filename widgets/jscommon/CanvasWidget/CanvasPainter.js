@@ -5,9 +5,8 @@ export function CanvasPainter(context2d, canvasLayer) {
     var m_pen = { color: 'black' };
     var m_font = { "pixel-size": 12, family: 'Arial' };
     var m_brush = { color: 'black' };
-    let m_width = 0;
-    let m_height = 0;
     let m_use_coords = false;
+    let m_exporting_figure = false;
 
     this.pen = function () { return shallowClone(m_pen); };
     this.setPen = function (pen) { setPen(pen); };
@@ -19,18 +18,24 @@ export function CanvasPainter(context2d, canvasLayer) {
     this.usePixels = function() { m_use_coords = false; };
     this.newPainterPath = function() { return new PainterPath(); };
 
+    this.setExportingFigure = function(val) { m_exporting_figure = val; };
+    this.exportingFigure = function() { return m_exporting_figure; }; 
+
     this._initialize = function (W, H) {
         //ctx.fillStyle='black';
         //ctx.fillRect(0,0,W,H);
-        m_width = W;
-        m_height = H;
+        // m_width = W;
+        // m_height = H;
     };
     this._finalize = function () {
     };
     this.clear = function() {
-        return _clearRect(0, 0, m_width, m_height);
+        return _clearRect(0, 0, canvasLayer.width(), canvasLayer.height());
     }
     this.clearRect = function (x, y, W, H) {
+        this.fillRect(x, y, W, H, {color: 'transparent'});
+        return;
+
         if (typeof(x) === 'object') {
             let a = x;
             x = a[0];
