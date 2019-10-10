@@ -77,6 +77,7 @@ export default class SectorPlot extends Component {
                     evalFunc={this._evalFunc}
                     theta_range={this.props.theta_range}
                     data_range={((this.props.data_range == 'auto') || (!this.props.data_range)) ? this.state.data_range_computed : this.props.data_range}
+                    border_width={this.props.border_width}
                 />
             </RespectStatus>
         )
@@ -132,7 +133,7 @@ class SectorPlotBase extends Component {
             }
         }
         painter.useCoords();
-        painter.setPen({color: 'gray', width: 3});
+        painter.setPen({color: 'gray', width: this.props.border_width || 2});
         let theta1 = this.props.theta_range[0];
         let theta2 = this.props.theta_range[1];
         painter.drawLine(0, 0, Math.cos(theta1), Math.sin(theta1));
@@ -152,7 +153,7 @@ class SectorPlotBase extends Component {
             painter.drawRect(R);
             painter.fillRect(R, col)
         }
-        painter.setPen({color: 'gray', width: 3});
+        painter.setPen({color: 'gray', width: this.props.border_with || 2});
         painter.drawRect(1.1, -0.5, 0.1, 1);
 
         console.log('elapsed for rendering: ', (new Date()) - timer);
