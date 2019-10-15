@@ -330,6 +330,7 @@ class SectorPlotBase extends Component {
     }
     _colorForVal(val) {
         val = (val - this.props.data_range[0]) / (this.props.data_range[1] - this.props.data_range[0]);
+        // TODO: interpolate colorMapLookup below
         return `rgb(${val*255}, ${val*255}, ${val*255})`;
     }
     _updateLayers() {
@@ -347,6 +348,12 @@ class SectorPlotBase extends Component {
         )
     }
 }
+
+// for Manas
+const colorMapLookup = [
+    [0, 0, 0],
+    [255, 255, 255]
+];
 
 class RespectStatus extends Component {
     state = {}
