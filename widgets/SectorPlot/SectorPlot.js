@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import CanvasWidget, { CanvasWidgetLayer, PainterPath } from '../jscommon/CanvasWidget';
 import { PythonInterface } from 'reactopya';
+import { type } from 'os';
 const config = require('./SectorPlot.json');
 
 export default class SectorPlot extends Component {
@@ -74,6 +75,13 @@ export default class SectorPlot extends Component {
                 <SectorPlotBase
                     width={this.props.width}
                     height={this.props.height}
+                    rticks={this.props.rticks || []}
+                    rticklabels={this.props.rticklabels}
+                    thetaticks={this.props.thetaticks || []}
+                    thetaticklabels={this.props.thetaticklabels}
+                    colorbarticks={this.props.colorbarticks || []}
+                    colorbarticklabels={this.props.colorbarticklabels}
+                    fontSize={this.props.fontSize}
                     evalFunc={this._evalFunc}
                     theta_range={this.props.theta_range}
                     data_range={((this.props.data_range == 'auto') || (!this.props.data_range)) ? this.state.data_range_computed : this.props.data_range}
@@ -101,8 +109,10 @@ class SectorPlotBase extends Component {
         super(props);
         this.state = {};
         this._mainLayer = new CanvasWidgetLayer(this._paintMainLayer);
+        // this._rAxisLayer = new CanvasWidgetLayer(this._paintRAxisLayer);
         this._allLayers = [
-            this._mainLayer
+            this._mainLayer //,
+            //this._rAxisLayer
         ];
     }
     componentDidMount() {
@@ -116,7 +126,6 @@ class SectorPlotBase extends Component {
         if (!data_range) return;
 
         let timer = new Date();
-        painter.clear();
         this._mainLayer.setCoordXRange(0, 1.3);
         this._mainLayer.setCoordYRange(-1, 1);
         this._mainLayer.setPreserveAspectRatio(true);
@@ -145,6 +154,120 @@ class SectorPlotBase extends Component {
         path.lineTo(Math.cos(theta2), Math.sin(theta2));
         painter.drawPath(path);
 
+        // painter.setPen({color: 'yellow'});
+        // painter.setBrush({color: 'green'});
+        // painter.usePixels();
+        // painter.ctxSave();
+        // painter.ctxTranslate(painter.coordsToPix(0, 0));
+        // painter.ctxRotate(-theta1);
+        // painter.drawText([-30, 0, 60, 30], {AlignTop: true, AlignCenter: true}, 'test');
+        // painter.ctxRestore();
+        
+        console.log('elapsed for rendering: ', (new Date()) - timer);
+
+        this._paintRAxisLayer(painter);
+        this._paintThetaAxisLayer(painter);
+        this._paintColorBar(painter);
+    }
+    _paintRAxisLayer = (painter) => {
+        const { rticks, rticklabels } = this.props;
+
+        let theta1 = this.props.theta_range[0];
+        let theta2 = this.props.theta_range[1];
+
+        this._mainLayer.setCoordXRange(0, 1.3);
+        this._mainLayer.setCoordYRange(-1, 1);
+        this._mainLayer.setPreserveAspectRatio(true);
+
+        const fontSize = this.props.fontSize || 12;
+        const subscriptPixelWidthPerCharacter = fontSize / 1.7;
+        painter.setFont({"pixel-size": fontSize, "family": "Courier"});
+
+        const normalDirection = [Math.sin(theta1), -Math.cos(theta1)];
+
+
+        for (let i=0; i<rticks.length; i++) {
+            let rtick = rticks[i];
+            let rticklabel = rticklabels[i] !== undefined ? rticklabels[i] : rtick + '';
+            painter.setPen({color: 'black'});
+            painter.setBrush({color: 'black'});
+            painter.usePixels();
+            painter.ctxSave();
+            painter.ctxTranslate(painter.coordsToPix(rtick * Math.cos(theta1), rtick * Math.sin(theta1)));
+            // painter.ctxRotate(-theta1);
+            let txtList = rticklabel.split('^');
+            
+            const horizontalOffset = normalDirection[0] * 8;
+            const verticalOffset = normalDirection[1] * 8 * (-1);
+            if (txtList.length === 1) {
+                painter.drawText([-100 + horizontalOffset, 0 + verticalOffset, 100, 100], {AlignTop: true, AlignRight: true}, rticklabel);
+            }
+            else if (txtList.length === 2) {
+                const subscriptElevation = 5;
+                const subscriptTextWidth = txtList[1].length * subscriptPixelWidthPerCharacter;
+                painter.drawText([-100 + horizontalOffset, 0 - subscriptElevation + verticalOffset, 100, 100], {AlignTop: true, AlignRight: true}, txtList[1]);
+                painter.drawText([-100 + horizontalOffset - subscriptTextWidth, 0 + verticalOffset, 100, 100], {AlignTop: true, AlignRight: true}, txtList[0]);
+            }
+            painter.drawLine(0, 0, horizontalOffset / 2, verticalOffset / 2);
+            painter.ctxRestore();
+            // painter.drawText([0, 0, 100, 100], {AlignTop: true, AlignCenter: true}, 'testing');
+        }
+    }
+    _paintThetaAxisLayer = (painter) => {
+        const { thetaticks, thetaticklabels } = this.props;
+
+        let theta1 = this.props.theta_range[0];
+        let theta2 = this.props.theta_range[1];
+
+        this._mainLayer.setCoordXRange(0, 1.3);
+        this._mainLayer.setCoordYRange(-1, 1);
+        this._mainLayer.setPreserveAspectRatio(true);
+
+        const fontSize = this.props.fontSize || 12;
+        const subscriptPixelWidthPerCharacter = fontSize / 1.7;
+        painter.setFont({"pixel-size": fontSize, "family": "Courier"});
+
+
+        for (let i=0; i<thetaticks.length; i++) {
+            let thetatick = thetaticks[i];
+            let thetaticklabel = thetaticklabels[i] !== undefined ? thetaticklabels[i] : thetatick + '';
+            const normalDirection = [1 * Math.cos(thetatick), 1 * Math.sin(thetatick)];
+            thetaticklabel = thetaticklabel.replace('\\pi', String.fromCharCode(960));
+            painter.setPen({color: 'black'});
+            painter.setBrush({color: 'black'});
+            painter.usePixels();
+            painter.ctxSave();
+            painter.ctxTranslate(painter.coordsToPix(1 * Math.cos(thetatick), 1 * Math.sin(thetatick)));
+            // painter.ctxRotate(-theta1);
+            let txtList = thetaticklabel.split('^');
+            
+            const horizontalOffset = normalDirection[0] * 8;
+            const verticalOffset = normalDirection[1] * 8 * (-1);
+            if (txtList.length === 1) {
+                painter.drawText([0 + horizontalOffset, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, thetaticklabel);
+            }
+            else if (txtList.length === 2) {
+                const subscriptElevation = 5;
+                const subscriptTextWidth = txtList[1].length * subscriptPixelWidthPerCharacter;
+                painter.drawText([0 + horizontalOffset, -50 - subscriptElevation + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[1]);
+                painter.drawText([0 + horizontalOffset - subscriptTextWidth, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[0]);
+            }
+            painter.drawLine(0, 0, horizontalOffset / 2, verticalOffset / 2);
+            painter.ctxRestore();
+            // painter.drawText([0, 0, 100, 100], {AlignTop: true, AlignCenter: true}, 'testing');
+        }
+    }
+    _paintColorBar = (painter) => {
+        const data_range = this.props.data_range;
+        if (!data_range) return;
+
+        const { colorbarticks, colorbarticklabels } = this.props;
+
+        let timer = new Date();
+        this._mainLayer.setCoordXRange(0, 1.3);
+        this._mainLayer.setCoordYRange(-1, 1);
+        this._mainLayer.setPreserveAspectRatio(true);
+        painter.useCoords();
         for (let i=0; i<100; i++) {
             let frac = i/100;
             let R = [1.1, -0.5 + frac * 1, 0.1, 1/100];
@@ -156,7 +279,34 @@ class SectorPlotBase extends Component {
         painter.setPen({color: 'gray', width: this.props.border_with || 2});
         painter.drawRect(1.1, -0.5, 0.1, 1);
 
-        console.log('elapsed for rendering: ', (new Date()) - timer);
+        for (let i=0; i<colorbarticks.length; i++) {
+            let tick = colorbarticks[i];
+            let ticklabel = colorbarticklabels[i] !== undefined ? colorbarticklabels[i] : tick + '';
+            const normalDirection = [1, 0];
+            ticklabel = ticklabel.replace('\\pi', String.fromCharCode(960));
+            painter.setPen({color: 'black'});
+            painter.setBrush({color: 'black'});
+            painter.usePixels();
+            painter.ctxSave();
+            const frac = (tick - data_range[0]) / (data_range[1] - data_range[0]);
+            painter.ctxTranslate(painter.coordsToPix(1.1 + 0.1, -0.5 + frac * 1));
+            // painter.ctxRotate(-theta1);
+            let txtList = ticklabel.split('^');
+            
+            const horizontalOffset = normalDirection[0] * 8;
+            const verticalOffset = normalDirection[1] * 8 * (-1);
+            if (txtList.length === 1) {
+                painter.drawText([0 + horizontalOffset, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, ticklabel);
+            }
+            else if (txtList.length === 2) {
+                const subscriptElevation = 5;
+                const subscriptTextWidth = txtList[1].length * subscriptPixelWidthPerCharacter;
+                painter.drawText([0 + horizontalOffset, -50 - subscriptElevation + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[1]);
+                painter.drawText([0 + horizontalOffset - subscriptTextWidth, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[0]);
+            }
+            painter.drawLine(0, 0, horizontalOffset / 2, verticalOffset / 2);
+            painter.ctxRestore();
+        }
     }
     _getColor(x, y) {
         const theta1 = this.props.theta_range[0];
