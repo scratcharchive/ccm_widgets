@@ -103,8 +103,8 @@ function computeDataRange(X) {
             if ((isNaN(maxval)) || (val > maxval)) maxval = val;
         }
     }
-    minval = -16
-    maxval = 0
+    // minval = -16
+    // maxval = 0
     return [minval, maxval];
 }
 
@@ -141,7 +141,7 @@ class SectorPlotBase extends Component {
                 let coords = this._mainLayer.pixToCoords([x, y]);
                 let col = this._getColor(coords[0], coords[1]);
                 if (col) {
-                    painter.fillRect(x, y, 1, 1, {color: col});
+                    painter.fillRect(x, y, 1.1, 1.1, {color: col});
                 }
             }
         }
