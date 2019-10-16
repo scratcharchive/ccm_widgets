@@ -20,6 +20,7 @@
             "colorbarticks": [-12, -8, -4],
             "colorbarticklabels": [],
             "theta_range": [ -0.6283185307179586, 0.6283185307179586 ],
+            "colormap": [[0,0,0],[0,1,0]],
             "rticks": [0.3, 0.6, 0.8],
             "rticklabels": ["test1", "10^-3", "10^-test"],
             "thetaticks": [-0.52, 0.52],

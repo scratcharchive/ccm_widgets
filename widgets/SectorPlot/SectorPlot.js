@@ -81,6 +81,7 @@ export default class SectorPlot extends Component {
                     thetaticklabels={this.props.thetaticklabels}
                     colorbarticks={this.props.colorbarticks || []}
                     colorbarticklabels={this.props.colorbarticklabels}
+                    colormap={this.props.colormap || 'gray'}
                     fontSize={this.props.fontSize}
                     evalFunc={this._evalFunc}
                     theta_range={this.props.theta_range}
@@ -330,8 +331,25 @@ class SectorPlotBase extends Component {
     }
     _colorForVal(val) {
         val = (val - this.props.data_range[0]) / (this.props.data_range[1] - this.props.data_range[0]);
-        // TODO: interpolate colorMapLookup below
-        return `rgb(${val*255}, ${val*255}, ${val*255})`;
+        val = Math.max(val,0);
+        val = Math.min(val,1);
+        const cmap = this.props.colormap;
+        
+        if (cmap === 'gray')
+        {
+            return `rgb(${val*255}, ${val*255}, ${val*255})`;
+        }
+        else
+        {
+           const dim = [cmap.length,cmap[0].length];
+           let nbin = Math.floor(val * (dim[0]-1));
+           nbin = Math.min(dim[0]-2,nbin);
+           let vtmp = (val - nbin/(dim[0]-1))*(dim[0]-1);
+           let rval = cmap[nbin][0] + vtmp*(cmap[nbin+1][0]-cmap[nbin][0]);
+           let gval = cmap[nbin][1] + vtmp*(cmap[nbin+1][1]-cmap[nbin][1]);
+           let bval = cmap[nbin][2] + vtmp*(cmap[nbin+1][2]-cmap[nbin][2]);
+           return `rgb(${rval*255}, ${gval*255}, ${bval*255})`;
+        }
     }
     _updateLayers() {
     }
@@ -348,12 +366,6 @@ class SectorPlotBase extends Component {
         )
     }
 }
-
-// for Manas
-const colorMapLookup = [
-    [0, 0, 0],
-    [255, 255, 255]
-];
 
 class RespectStatus extends Component {
     state = {}
