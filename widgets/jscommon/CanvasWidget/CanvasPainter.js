@@ -125,6 +125,15 @@ export function CanvasPainter(context2d, canvasLayer) {
         let rect2 = transformRect(rect);
         return _drawText(rect2, alignment, txt);
     }
+    this.createImageData = function(W, H) {
+        return ctx.getImageData(W, H);
+    }
+    this.putImageData = function(imagedata, x, y) {
+        ctx.putImageData(imagedata, x, y);
+    }
+    this.drawImage = function(image, dx, dy) {
+        ctx.drawImage(image, dx, dy);
+    }
     function _drawText(rect, alignment, txt) {
         var x, y, textAlign, textBaseline;
         if (alignment.AlignLeft) {

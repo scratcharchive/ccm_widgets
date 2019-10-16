@@ -136,15 +136,47 @@ class SectorPlotBase extends Component {
         painter.useCoords();
         // painter.fillRect(-1, -1, 2, 2, {color: 'lightgray'});
         painter.usePixels();
+
+        const W = this._mainLayer.width();
+        const H = this._mainLayer.height();
+        let temporaryCanvas = document.createElement("canvas");
+        temporaryCanvas.width = W;
+        temporaryCanvas.height = H;
+
+        // let temporaryCanvas = new temporaryCanvas(W, H);
+        var temporaryCtx = temporaryCanvas.getContext('2d');
+
+        let imagedata = temporaryCtx.createImageData(this._mainLayer.width(), this._mainLayer.height());
         for (let y = 0; y < this._mainLayer.height(); y++) {
             for (let x = 0; x < this._mainLayer.width(); x++) {
+                var pixelindex = (y * this._mainLayer.width() + x) * 4;
                 let coords = this._mainLayer.pixToCoords([x, y]);
                 let col = this._getColor(coords[0], coords[1]);
                 if (col) {
-                    painter.fillRect(x, y, 1.1, 1.1, {color: col});
+                    imagedata.data[pixelindex + 0] = Math.floor(col[0]);
+                    imagedata.data[pixelindex + 1] = Math.floor(col[1]);
+                    imagedata.data[pixelindex + 2] = Math.floor(col[2]);
+                    imagedata.data[pixelindex + 3] = 255;
+                    // painter.fillRect(x, y, 1.1, 1.1, {color: col});
+                }
+                else {
+                    imagedata.data[pixelindex + 0] = 0;
+                    imagedata.data[pixelindex + 1] = 0;
+                    imagedata.data[pixelindex + 2] = 0;
+                    imagedata.data[pixelindex + 3] = 0;
                 }
             }
         }
+        temporaryCtx.putImageData(imagedata, 0, 0);
+
+        // We need to go through hoops to allow canvas2svg to work properly
+        // canvas2svg implements drawImage, but not putImageData
+        // Also, offscreen canvas does not work (FYI)
+        painter.drawImage(temporaryCanvas, 0, 0);
+
+        // In the future we could use the follow to compress the image -- but we prob don't need to worry about that
+        // let dataUrl = temporaryCtx.canvas.toDataURL('image/png');
+
         painter.useCoords();
         painter.setPen({color: 'gray', width: this.props.border_width || 2});
         let theta1 = this.props.theta_range[0];
@@ -344,7 +376,8 @@ class SectorPlotBase extends Component {
         
         if (cmap === 'gray')
         {
-            return `rgb(${val*255}, ${val*255}, ${val*255})`;
+            return [val*255, val*255, val*255];
+            // return `rgb(${val*255}, ${val*255}, ${val*255})`;
         }
         else
         {
@@ -355,7 +388,8 @@ class SectorPlotBase extends Component {
            let rval = cmap[nbin][0] + vtmp*(cmap[nbin+1][0]-cmap[nbin][0]);
            let gval = cmap[nbin][1] + vtmp*(cmap[nbin+1][1]-cmap[nbin][1]);
            let bval = cmap[nbin][2] + vtmp*(cmap[nbin+1][2]-cmap[nbin][2]);
-           return `rgb(${rval*255}, ${gval*255}, ${bval*255})`;
+           return [rval*255, gval*255, bval*255];
+           // return `rgb(${rval*255}, ${gval*255}, ${bval*255})`;
         }
     }
     _updateLayers() {
