@@ -18,7 +18,7 @@
             "download_from": "spikeforest.public",
             "data_range": "auto",
             "colorbarticks": [-12, -8, -4],
-            "colorbarticklabels": [],
+            "colorbarticklabels": ["10^-12","10^-8","10^0"],
             "theta_range": [ -0.6283185307179586, 0.6283185307179586 ],
             "colormap": [[0,0,0],[0,1,0]],
             "rticks": [0.3, 0.6, 0.8],

@@ -86,6 +86,7 @@ export default class SectorPlot extends Component {
                     evalFunc={this._evalFunc}
                     theta_range={this.props.theta_range}
                     data_range={((this.props.data_range == 'auto') || (!this.props.data_range)) ? this.state.data_range_computed : this.props.data_range}
+//                    data_range ={this.props.data_range}
                     border_width={this.props.border_width}
                 />
             </RespectStatus>
@@ -102,6 +103,8 @@ function computeDataRange(X) {
             if ((isNaN(maxval)) || (val > maxval)) maxval = val;
         }
     }
+    minval = -16
+    maxval = 0
     return [minval, maxval];
 }
 
@@ -269,16 +272,20 @@ class SectorPlotBase extends Component {
         this._mainLayer.setCoordYRange(-1, 1);
         this._mainLayer.setPreserveAspectRatio(true);
         painter.useCoords();
+
+        const fontSize = this.props.fontSize || 12;
+        const subscriptPixelWidthPerCharacter = fontSize / 1.7;
+        painter.setFont({"pixel-size": fontSize, "family": "Courier"});
         for (let i=0; i<100; i++) {
             let frac = i/100;
-            let R = [1.1, -0.5 + frac * 1, 0.1, 1/100];
+            let R = [1.2, -0.5 + frac * 1, 0.1, 1/100];
             let col = this._colorForVal(data_range[0] + frac * (data_range[1] - data_range[0]));
             painter.setPen({color: col});
             painter.drawRect(R);
             painter.fillRect(R, col)
         }
         painter.setPen({color: 'gray', width: this.props.border_with || 2});
-        painter.drawRect(1.1, -0.5, 0.1, 1);
+        painter.drawRect(1.2, -0.5, 0.1, 1);
 
         for (let i=0; i<colorbarticks.length; i++) {
             let tick = colorbarticks[i];
@@ -290,7 +297,7 @@ class SectorPlotBase extends Component {
             painter.usePixels();
             painter.ctxSave();
             const frac = (tick - data_range[0]) / (data_range[1] - data_range[0]);
-            painter.ctxTranslate(painter.coordsToPix(1.1 + 0.1, -0.5 + frac * 1));
+            painter.ctxTranslate(painter.coordsToPix(1.2 + 0.1, -0.5 + frac * 1));
             // painter.ctxRotate(-theta1);
             let txtList = ticklabel.split('^');
             
@@ -301,9 +308,9 @@ class SectorPlotBase extends Component {
             }
             else if (txtList.length === 2) {
                 const subscriptElevation = 5;
-                const subscriptTextWidth = txtList[1].length * subscriptPixelWidthPerCharacter;
-                painter.drawText([0 + horizontalOffset, -50 - subscriptElevation + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[1]);
-                painter.drawText([0 + horizontalOffset - subscriptTextWidth, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[0]);
+                const subscriptTextWidth = txtList[0].length * subscriptPixelWidthPerCharacter;
+                painter.drawText([0 + horizontalOffset + subscriptTextWidth, -50 - subscriptElevation + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[1]);
+                painter.drawText([0 + horizontalOffset, -50 + verticalOffset, 100, 100], {AlignVCenter: true, AlignLeft: true}, txtList[0]);
             }
             painter.drawLine(0, 0, horizontalOffset / 2, verticalOffset / 2);
             painter.ctxRestore();
