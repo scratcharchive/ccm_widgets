@@ -1,0 +1,6 @@
+{
+    "project_name": "ccm_widgets",
+    "type": "Clustering",
+    "description": "Evaluate clustering algorithms",
+    "defaultProps": {}
+}

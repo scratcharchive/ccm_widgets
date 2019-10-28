@@ -1,4 +1,9 @@
 {
+    "widget": {
+        "type": "Clustering",
+        "props": {
+        }
+    },
     "widget1": {
         "type": "SectorPlot",
         "title": "SectorPlot",
@@ -9,7 +14,7 @@
             "theta_range": [ -0.6283185307179586, 0.6283185307179586 ]
         }
     },
-    "widget": {
+    "widget2": {
         "type": "SectorPlot",
         "title": "SectorPlot",
         "key": "SectorPlot",

@@ -7,3 +7,5 @@ export { default as VBox } from './VBox/VBox';
 export { default as Tabs } from './Tabs/Tabs';
 export { default as Accordion } from './Accordion/Accordion';
 export { default as SectorPlot } from './SectorPlot/SectorPlot';
+
+export { default as Clustering } from './Clustering/Clustering';

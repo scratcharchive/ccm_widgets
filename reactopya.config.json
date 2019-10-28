@@ -1,6 +1,6 @@
 {
     "project_name": "ccm_widgets",
-    "version": "0.4.5",
+    "version": "0.4.6",
     "description": "Reactopya widgets of relevance to the Center for Computational Mathematics, Flatiron Institute",
     "author": "Jeremy Magland",
     "license": "Apache-2.0",
@@ -8,6 +8,7 @@
         "install_requires": [
             "numpy",
             "mountaintools",
+            "kachery",
             "vtk"
         ]
     },

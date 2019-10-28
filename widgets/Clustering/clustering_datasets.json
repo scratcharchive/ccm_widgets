@@ -1,0 +1,58 @@
+{
+    "datasets": [
+        {
+            "name": "chang_pathbased",
+            "url": "https://clusteval.sdu.dk/1/datasets/446",
+            "path": "sha1://cc6dbcd30a82dbdce756c9e2b27369bc7281755c/chang_pathbased.txt.conv",
+            "trueNumClusters": 3
+        },
+        {
+            "name": "chang_spiral",
+            "url": "https://clusteval.sdu.dk/1/datasets/731",
+            "path": "sha1://3a617e0fdc4357323911ff77439073bd37b4a173/chang_spiral.txt.conv",
+            "trueNumClusters": 3
+        },
+        {
+            "name": "fraenti_s3",
+            "url": "https://clusteval.sdu.dk/1/datasets/1681",
+            "path": "sha1://896e0dd95bcd118a2d4f08e3394de757cd0b4b2c/fraenti_s3.txt.conv",
+            "trueNumClusters": 15
+        },
+        {
+            "name": "fu_flame",
+            "url": "https://clusteval.sdu.dk/1/datasets/1935",
+            "path": "sha1://6806cc83b3ce08463537da89b22532e6b5067985/fu_flame.txt.conv",
+            "trueNumClusters": 2
+        },
+        {
+            "name": "gionis_aggregation",
+            "url": "https://clusteval.sdu.dk/1/datasets/2149",
+            "path": "sha1://c69d62b479d9a8353de1c36ff9a424b627bd43dc/gionis_aggregation.txt.conv",
+            "trueNumClusters": 7
+        },
+        {
+            "name": "synthetic_cassini",
+            "url": "https://clusteval.sdu.dk/1/datasets/2982",
+            "path": "sha1://7945af5e31de83ab749fcf1b6b9b965bd93686df/cassini250",
+            "trueNumClusters": 3
+        },
+        {
+            "name": "synthetic_cuboid",
+            "url": "https://clusteval.sdu.dk/1/datasets/3351",
+            "path": "sha1://88871762816b5f396931546a82d96d34df992c13/cuboid250",
+            "trueNumClusters": 4
+        },
+        {
+            "name": "synthetic_spirals",
+            "url": "https://clusteval.sdu.dk/1/datasets/2906",
+            "path": "sha1://d7317ef695818b59dd06dc27ce2cbf6004594539/spirals250",
+            "trueNumClusters": 2
+        },
+        {
+            "name": "veenman_r15",
+            "url": "https://clusteval.sdu.dk/1/datasets/2774",
+            "path": "sha1://aa258e0be7d953d84d1b32a35fa8e2266cb667ca/veenman_r15.txt.conv",
+            "trueNumClusters": 15
+        }
+    ]
+}

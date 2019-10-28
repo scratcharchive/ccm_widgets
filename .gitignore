@@ -1,5 +1,6 @@
 generated
 _watching
+package-lock.json
 
 .ipynb_checkpoints
 .mypy_cache
