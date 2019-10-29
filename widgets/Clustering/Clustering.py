@@ -101,14 +101,11 @@ class Clustering:
 
         alg_name = state.get('alg_name', 'none')
         alg_arguments = state.get('alg_arguments', dict())
+        kachery_config = state.get('kachery_config', None)
         args0 = alg_arguments.get(alg_name, {})
 
-        ka.set_config(
-            url='http://132.249.245.245:24342',
-            channel='public',
-            password='public',
-            use_remote=True
-        )
+        if kachery_config:
+            ka.set_config(**kachery_config)
 
         dirname = os.path.dirname(os.path.realpath(__file__))
         fname = os.path.join(dirname, 'clustering_datasets.json')

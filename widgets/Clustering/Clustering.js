@@ -17,6 +17,7 @@ export default class Clustering extends Component {
             // javascript state
             alg_name: null,
             alg_arguments: null,
+            kachery_config: null,
 
             // python state
             datasets: null,
@@ -35,7 +36,8 @@ export default class Clustering extends Component {
         // Use this.pythonInterface.setState(...) to pass data to the python backend
         this.pythonInterface.setState({
             alg_name: 'none',
-            alg_arguments: {}
+            alg_arguments: {},
+            kachery_config: this.props.kachery_config || null
         });
     }
     componentWillUnmount() {
