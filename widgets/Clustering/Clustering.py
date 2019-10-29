@@ -2,6 +2,7 @@ import os
 import json
 import kachery as ka
 import numpy as np
+import mlprocessors as mlpr
 
 class Clustering:
     def __init__(self):
@@ -112,6 +113,7 @@ class Clustering:
         with open(fname, 'r') as f:
             datasets = json.load(f)
         for ds in datasets['datasets']:
+            self._set_status('running', 'Running: {}'.format(ds['path']))
             print('Loading {}'.format(ds['path']))
             path2 = ka.load_file(ds['path'])
             ka.store_file(path2)
@@ -204,23 +206,56 @@ def ALG_dbscan(X, args, opts):
     labels = A.labels_
     return labels
 
+class AffinityPropagation(mlpr.Processor):
+    VERSION = '0.1.0'
+    data = mlpr.Input()
+    labels_out = mlpr.Output(is_array=True)
+    damping = mlpr.FloatParameter()
+    def run(self):
+        from sklearn.cluster import AffinityPropagation
+        import numpy as np
+        A = AffinityPropagation(damping=self.damping).fit(np.load(self.data))
+        np.save(self.labels_out + '.npy', A.labels_)
+        os.rename(self.labels_out + '.npy', self.labels_out)
+
 def ALG_affinitypropagation(X, args, opts):
-    from sklearn.cluster import AffinityPropagation
-    import numpy as np
-    damping = opts.get('damping', 0.5)
-    A = AffinityPropagation(damping=damping).fit(X)
-    labels = A.labels_
-    return labels
+    tmp_fname = '/tmp/affinitypropagation_tmp.npy'
+    np.save(tmp_fname, X)
+    result = AffinityPropagation.execute(data=tmp_fname, damping=args.get('damping', 0.5), labels_out=dict(ext='.npy'))
+    return result.outputs['labels_out']
+
+
+class MeanShift(mlpr.Processor):
+    VERSION = '0.1.0'
+    data = mlpr.Input()
+    labels_out = mlpr.Output(is_array=True)
+    bandwidth = mlpr.StringParameter()
+    def run(self):
+        from sklearn.cluster import MeanShift
+        import numpy as np
+        if self.bandwidth == 'auto':
+            bandwidth = None
+        else:
+            bandwidth = float(self.bandwidth)
+        A = MeanShift(bandwidth=bandwidth).fit(np.load(self.data))
+        np.save(self.labels_out + '.npy', A.labels_)
+        os.rename(self.labels_out + '.npy', self.labels_out)
 
 def ALG_meanshift(X, args, opts):
-    from sklearn.cluster import MeanShift
-    import numpy as np
-    bandwidth = opts.get('bandwidth', 'auto')
-    if bandwidth == 'auto':
-        bandwidth = None
-    A = MeanShift(bandwidth=bandwidth).fit(X)
-    labels = A.labels_
-    return labels
+    tmp_fname = '/tmp/meanshift_tmp.npy'
+    np.save(tmp_fname, X)
+    result = MeanShift.execute(data=tmp_fname, bandwidth=args.get('bandwidth', 'auto'), labels_out=dict(ext='.npy'))
+    return result.outputs['labels_out']
+
+# def ALG_meanshift(X, args, opts):
+#     from sklearn.cluster import MeanShift
+#     import numpy as np
+#     bandwidth = opts.get('bandwidth', 'auto')
+#     if bandwidth == 'auto':
+#         bandwidth = None
+#     A = MeanShift(bandwidth=bandwidth).fit(X)
+#     labels = A.labels_
+#     return labels
 
 def ALG_spectralclustering(X, args, opts):
     from sklearn.cluster import SpectralClustering

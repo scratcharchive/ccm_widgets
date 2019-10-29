@@ -3,7 +3,6 @@ import { PythonInterface } from 'reactopya';
 import { Grid, Paper, Table, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
 import CanvasWidget, { CanvasWidgetLayer, PainterPath } from '../jscommon/CanvasWidget';
 import { FormControl, Select, MenuItem, makeStyles, InputLabel, TextField } from '@material-ui/core';
-import { runInThisContext } from 'vm';
 import generateColorTable from './generateColorTable';
 const ReactMarkdown = require('react-markdown');
 const config = require('./Clustering.json');
@@ -20,8 +19,8 @@ export default class Clustering extends Component {
             kachery_config: null,
 
             // python state
-            datasets: null,
-            algorithms: null,
+            datasets: {datasets: []},
+            algorithms: [],
             status: '',
             status_message: ''
         }
@@ -43,24 +42,35 @@ export default class Clustering extends Component {
     componentWillUnmount() {
         this.pythonInterface.stop();
     }
+    _clearData() {
+        let datasets = this.state.datasets || {};
+        for (let ds of datasets.datasets) {
+            ds.data = null;
+        }
+        this.setState({
+            datasets: datasets
+        });
+    }
     render() {
         return (
-            <RespectStatus {...this.state}>
-                <ClusteringWidget
-                    datasets={this.state.datasets}
-                    algorithms={this.state.algorithms}
-                    algorithmArguments={this.state.alg_arguments}
-                    algName={this.state.alg_name}
-                    onAlgNameChanged={(algName) => {this.pythonInterface.setState({alg_name: algName})}}
-                    onAlgorithmArgumentsChanged={(algorithmArguments) => {this.pythonInterface.setState({alg_arguments: algorithmArguments})}}
-                />
-            </RespectStatus>
+            <ClusteringWidget
+                loaded={this.state.status == 'finished'}
+                statusText={this.state.status == 'finished' ? 'ready' : this.state.status_message}
+                datasets={this.state.datasets}
+                algorithms={this.state.algorithms}
+                algorithmArguments={this.state.alg_arguments}
+                algName={this.state.alg_name}
+                onAlgNameChanged={(algName) => {this._clearData(); this.pythonInterface.setState({alg_name: algName})}}
+                onAlgorithmArgumentsChanged={(algorithmArguments) => {this._clearData(); this.pythonInterface.setState({alg_arguments: algorithmArguments})}}
+            />
         )
     }
 }
 
 function ClusteringWidget(props) {
     const { datasets, algorithms, algName, algorithmArguments } = props;
+    if (!datasets) return <span />;
+    if (!algorithms) return <span />;
     let itemStyle = {
         minWidth: 500
     };
@@ -68,7 +78,6 @@ function ClusteringWidget(props) {
         padding: 20
     };
     const _handleAlgorithmArgumentChanged = (name, val) => {
-        console.log('--- handleAlgorithmArgumentChanged', name, val);
         let aa = algorithmArguments;
         aa[algName] = aa[algName] || {};
         aa[algName][name] = val;
@@ -77,7 +86,9 @@ function ClusteringWidget(props) {
     return (
         <div style={style0}>
             <Overview />
+            <div>Status: {props.statusText}</div>
             <AlgSelect
+                disabled={!props.loaded}
                 algorithms={algorithms}
                 algorithmArguments={algorithmArguments}
                 algName={algName}
@@ -88,7 +99,10 @@ function ClusteringWidget(props) {
                 {
                     datasets.datasets.map((ds) => (
                         <Grid item key={ds.name} style={itemStyle}>
-                            <Dataset dataset={ds} />
+                            {
+                                <Dataset dataset={ds} />
+                            }
+                            
                         </Grid>
                     ))
                 }
@@ -98,14 +112,15 @@ function ClusteringWidget(props) {
 }
 
 function AlgSelect(props) {
-    const { algorithms, algName, algorithmArguments } = props;
-    console.log('--- aa', algorithmArguments);
+    const { algorithms, algName, algorithmArguments, disabled } = props;
+    if (!algorithmArguments) return <span />;
     let formFields = [
         {
             key: 'algName',
             label: 'Select clustering algorithm',
             type: 'select',
             value: algName,
+            disabled: disabled,
             options: algorithms.map((alg) => (
                 {
                     value: alg.name,
@@ -119,20 +134,23 @@ function AlgSelect(props) {
         if (alg.name === algName)
             algorithm = alg;
     }
-    let aa = algorithmArguments[algName] || {};
-    for (let param of algorithm.parameters) {
-        formFields.push({
-            key: param.name,
-            label: param.name,
-            type: 'select',
-            value: aa[param.name] === undefined ? param.default : aa[param.name],
-            options: param.choices.map((choice) => (
-                {
-                    value: choice,
-                    label: choice
-                }
-            ))
-        });
+    if (algorithm) {
+        let aa = algorithmArguments[algName] || {};
+        for (let param of algorithm.parameters) {
+            formFields.push({
+                key: param.name,
+                label: param.name,
+                type: 'select',
+                value: aa[param.name] === undefined ? param.default : aa[param.name],
+                disabled: disabled,
+                options: param.choices.map((choice) => (
+                    {
+                        value: choice,
+                        label: choice
+                    }
+                ))
+            });
+        }
     }
     const _handleFieldChange = (key, val) => {
         if (key === 'algName') {
@@ -199,6 +217,7 @@ class FormControl2 extends Component {
                             name: formField.key,
                             id: formField.key,
                         }}
+                        disabled={formField.disabled || false}
                     >
                         {
                             formField.options.map((option) => (
