@@ -22,7 +22,10 @@ export default class Clustering extends Component {
             datasets: {datasets: []},
             algorithms: [],
             status: '',
-            status_message: ''
+            status_message: '',
+
+            selectedAlgName: null,
+            selectedAlgArguments: null
         }
     }
     componentDidMount() {
@@ -51,6 +54,13 @@ export default class Clustering extends Component {
             datasets: datasets
         });
     }
+    _handleUpdate = () => {
+        this._clearData();
+        this.pythonInterface.setState({
+          alg_name: this.state.selectedAlgName,
+          alg_arguments: this.state.selectedAlgArguments  
+        });
+    }
     render() {
         return (
             <ClusteringWidget
@@ -58,10 +68,11 @@ export default class Clustering extends Component {
                 statusText={this.state.status == 'finished' ? 'ready' : this.state.status_message}
                 datasets={this.state.datasets}
                 algorithms={this.state.algorithms}
-                algorithmArguments={this.state.alg_arguments}
-                algName={this.state.alg_name}
-                onAlgNameChanged={(algName) => {this._clearData(); this.pythonInterface.setState({alg_name: algName})}}
-                onAlgorithmArgumentsChanged={(algorithmArguments) => {this._clearData(); this.pythonInterface.setState({alg_arguments: algorithmArguments})}}
+                algorithmArguments={this.state.selectedAlgArguments || {}}
+                algName={this.state.selectedAlgName || ''}
+                // onChange={(algName, algorithmArguments) => {this._clearData(); this.pythonInterface.setState({alg_name: algName, alg_arguments: algorithmArguments})}}
+                onChange={(algName, algorithmArguments) => {this.setState({selectedAlgName: algName, selectedAlgArguments: algorithmArguments})}}
+                onUpdate={this._handleUpdate}
             />
         )
     }
@@ -81,7 +92,7 @@ function ClusteringWidget(props) {
         let aa = algorithmArguments;
         aa[algName] = aa[algName] || {};
         aa[algName][name] = val;
-        props.onAlgorithmArgumentsChanged(aa);
+        props.onChange(algName, aa);
     }
     return (
         <div style={style0}>
@@ -93,7 +104,8 @@ function ClusteringWidget(props) {
                 algorithmArguments={algorithmArguments}
                 algName={algName}
                 onAlgorithmArgumentChanged={_handleAlgorithmArgumentChanged}
-                onAlgNameChanged={(name) => {props.onAlgNameChanged(name);}}
+                onAlgNameChanged={(name) => {props.onChange(name, algorithmArguments);}}
+                onUpdate={() => {props.onUpdate();}}
             />
             <Grid container>
                 {
@@ -128,7 +140,15 @@ function AlgSelect(props) {
                 }
             ))
         }
-    ]
+    ];
+    const _handleFieldChange = (key, val) => {
+        if (key === 'algName') {
+            props.onAlgNameChanged(val)
+        }
+        else {
+            props.onAlgorithmArgumentChanged(key, val);
+        }
+    }
     let algorithm;
     for (let alg of algorithms) {
         if (alg.name === algName)
@@ -137,6 +157,11 @@ function AlgSelect(props) {
     if (algorithm) {
         let aa = algorithmArguments[algName] || {};
         for (let param of algorithm.parameters) {
+            if (aa[param.name] === undefined) {
+                if (param.default !== undefined) {
+                    _handleFieldChange(param.name, param.default);
+                }
+            }
             formFields.push({
                 key: param.name,
                 label: param.name,
@@ -152,14 +177,12 @@ function AlgSelect(props) {
             });
         }
     }
-    const _handleFieldChange = (key, val) => {
-        if (key === 'algName') {
-            props.onAlgNameChanged(val)
-        }
-        else {
-            props.onAlgorithmArgumentChanged(key, val);
-        }
-    }
+    formFields.push({
+        key: 'update',
+        label: 'Update',
+        type: 'button',
+        onClick: () => {props.onUpdate();}
+    })
     return (
         <div style={{ maxWidth: 300 }}>
             <Form2
@@ -298,6 +321,14 @@ function Dataset(props) {
                         <TableCell>Num. points</TableCell>
                         <TableCell>{data2.length}</TableCell>
                     </TableRow>
+                    <TableRow>
+                        <TableCell>Algorithm</TableCell>
+                        <TableCell>{dataset.algName}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Elapsed (sec)</TableCell>
+                        <TableCell>{dataset.elapsed || ''}</TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
             {
@@ -323,6 +354,10 @@ class Plot extends Component {
         this._allLayers = [
             this._mainLayer
         ];
+    }
+    componentDidUpdate() {
+        // this probably should not be necessary
+        this._mainLayer.repaint();
     }
     _paintMainLayer = (painter) => {
         const { data, labels } = this.props;

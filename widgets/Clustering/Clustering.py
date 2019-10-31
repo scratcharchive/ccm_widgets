@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import kachery as ka
 import numpy as np
 import mlprocessors as mlpr
@@ -58,7 +59,7 @@ class Clustering:
                     dict(
                         name='bandwidth',
                         choices=['auto', 0.1, 0.2, 0.3, 0.4, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 50, 100, 200, 300],
-                        default=3
+                        default='auto'
                     )
                 ]
             ),
@@ -66,6 +67,11 @@ class Clustering:
                 name='spectralclustering',
                 label='Spectral clustering',
                 parameters=[
+                    dict(
+                        name='n_clusters',
+                        choices=['true', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                        default='true'
+                    )
                 ]
             ),
             dict(
@@ -76,6 +82,11 @@ class Clustering:
                         name='n_clusters',
                         choices=['true', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
                         default='true'
+                    ),
+                    dict(
+                        name='linkage',
+                        choices=['ward', 'complete', 'average', 'single'],
+                        default='ward'
                     )
                 ]
             ),
@@ -112,6 +123,7 @@ class Clustering:
         fname = os.path.join(dirname, 'clustering_datasets.json')
         with open(fname, 'r') as f:
             datasets = json.load(f)
+        timer = time.time()
         for ds in datasets['datasets']:
             self._set_status('running', 'Running: {}'.format(ds['path']))
             print('Loading {}'.format(ds['path']))
@@ -121,9 +133,21 @@ class Clustering:
                 ds['data'] = self._load_dataset_data(path2)
                 if alg_name:
                     print('Clustering...')
+                    ds['algName'] = alg_name
+                    ds['algArgs'] = args0
+                    timer0 = time.time()
                     ds['labels'] = self._do_clustering(ds['data'], alg_name, args0, dict(true_num_clusters=ds['trueNumClusters']))
+                    elapsed0 = time.time() - timer0
+                    if alg_name != 'none':
+                        ds['elapsed'] = elapsed0
             else:
                 print('Unable to realize file: {}'.format(ds['path']))
+            elapsed = time.time() - timer
+            if elapsed > 0.1:
+                self._set_state(
+                    algorithms=self._algorithms,
+                    datasets=datasets
+                )
 
         self._set_state(
             algorithms=self._algorithms,
@@ -241,6 +265,26 @@ class MeanShift(mlpr.Processor):
         np.save(self.labels_out + '.npy', A.labels_)
         os.rename(self.labels_out + '.npy', self.labels_out)
 
+# def test1:
+#     from sklearn.cluster import MeanShift
+#     A = MeanShift(bandwidth=3).fit(X)
+#     labels = A.labels_
+
+# def test2:
+#     from sklearn.cluster import AgglomerativeClustering
+#     A = AgglomerativeClustering(n_clusters=5, linkage='ward').fit(X)
+#     labels = A.labels_
+
+# def test3:
+#     from sklearn.cluster import SpectralClustering
+#     A = SpectralClustering(n_clusters=5).fit(X)
+#     labels = A.labels_
+
+# def test4:
+#     from isosplit5 import isosplit5
+#     labels = isosplit5(X)
+    
+
 def ALG_meanshift(X, args, opts):
     tmp_fname = '/tmp/meanshift_tmp.npy'
     np.save(tmp_fname, X)
@@ -260,7 +304,10 @@ def ALG_meanshift(X, args, opts):
 def ALG_spectralclustering(X, args, opts):
     from sklearn.cluster import SpectralClustering
     import numpy as np
-    A = SpectralClustering().fit(X)
+    n_clusters = args.get('n_clusters', 'true')
+    if n_clusters == 'true':
+        n_clusters = opts.get('true_num_clusters', 3)
+    A = SpectralClustering(n_clusters=n_clusters).fit(X)
     labels = A.labels_
     return labels
 
@@ -270,7 +317,8 @@ def ALG_agglomerativeclustering(X, args, opts):
     n_clusters = args.get('n_clusters', 'true')
     if n_clusters == 'true':
         n_clusters = opts.get('true_num_clusters', 3)
-    A = AgglomerativeClustering(n_clusters=n_clusters).fit(X)
+    linkage = args['linkage']
+    A = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage).fit(X)
     labels = A.labels_
     return labels
 
