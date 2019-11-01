@@ -17,6 +17,10 @@ These examples show at least four ways to use these widgets.
 * From a .py script (launches an electron desktop application)
 * From a .json file (launches an electron desktop application)
 
+## Clustering example
+
+[Colab notebook](https://colab.research.google.com/drive/1yiDmEZL9CzrFuuEcinbeJWGL61mC38tS)
+
 ## Tests
 
 Some docker tests are available in the [generated/tests](generated/tests) directory.
