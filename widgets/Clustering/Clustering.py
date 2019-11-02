@@ -10,6 +10,11 @@ class Clustering:
         super().__init__()
         self._algorithms = [
             dict(
+                name='dpclus',
+                label='dpclus',
+                parameters=[]
+            ),
+            dict(
                 name='none',
                 label='None',
                 parameters=[]
@@ -98,6 +103,7 @@ class Clustering:
             ),
         ]
         self._alg_functions = dict(
+            dpclus=ALG_dpclus,
             none=ALG_none,
             kmeans=ALG_kmeans,
             dbscan=ALG_dbscan,
@@ -205,6 +211,14 @@ class Clustering:
     # Set status and a status message. Use running', 'finished', 'error'
     def _set_status(self, status, status_message=''):
         self._set_state(status=status, status_message=status_message)
+
+def ALG_dpclus(X, args, opts):
+    from scipy.spatial.distance import pdist, squareform
+    import rlcluster as rlc
+    D = squareform(pdist(X))
+    result = rlc.cluster(D)
+    labels = result.assignments # point i belongs to cluster a[i]
+    return labels
 
 def ALG_none(X, args, opts):
     N=X.shape[0]
