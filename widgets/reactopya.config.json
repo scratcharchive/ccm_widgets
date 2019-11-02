@@ -1,0 +1,24 @@
+{
+    "project_name": "ccm_widgets",
+    "version": "0.4.10",
+    "description": "Reactopya widgets of relevance to the Center for Computational Mathematics, Flatiron Institute",
+    "author": "Jeremy Magland",
+    "license": "Apache-2.0",
+    "setup_py": {
+        "install_requires": [
+            "numpy",
+            "mountaintools",
+            "kachery",
+            "vtk",
+            "scipy",
+            "rlcluster"
+        ]
+    },
+    "additional_jupyter_imports": [
+        "from .widgets.jupyter import *"
+    ],
+    "adjust_webpack_rules": [
+        "var vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core.rules;",
+        "rules = rules.concat(vtkRules);"
+    ]
+}
