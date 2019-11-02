@@ -33,6 +33,12 @@ Then install the extension (from npm):
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 ```
 
+Install jupyter-http-over-ws
+```
+pip install jupyter-http-over-ws
+```
+
+
 Next, install the the latest reactopya_jup Python package:
 
 ```
