@@ -86,8 +86,7 @@ function ClusteringWidget(props) {
         minWidth: 500
     };
     const style0 = {
-        padding: 20,
-        overflowY: 'auto'
+        padding: 20
     };
     const _handleAlgorithmArgumentChanged = (name, val) => {
         let aa = algorithmArguments;
