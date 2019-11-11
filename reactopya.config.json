@@ -9,7 +9,8 @@
             "numpy",
             "mountaintools",
             "kachery",
-            "vtk"
+            "vtk",
+            "sklearn"
         ]
     },
     "additional_jupyter_imports": [

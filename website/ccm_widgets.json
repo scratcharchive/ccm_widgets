@@ -1,0 +1,8 @@
+{
+    "apps": [
+        {
+            "name": "clustering",
+            "pyFile": "clustering.py"
+        }
+    ]
+}
