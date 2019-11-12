@@ -1,0 +1,6 @@
+{
+    "project_name": "ccm_widgets",
+    "type": "Markdown",
+    "description": "Show markdown content, possibly from a local or remote file",
+    "defaultProps": {}
+}
