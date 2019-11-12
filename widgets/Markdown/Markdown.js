@@ -45,10 +45,14 @@ export default class Markdown extends Component {
         }
     }
     render() {
+        function linkRenderer(props) {
+            return <a href={props.href} target="_blank">{props.children}</a>
+        }
         return (
             <RespectStatus {...this.state}>
                 <ReactMarkdown
                     source={this.state.content}
+                    renderers={{ link: linkRenderer }}
                 />
             </RespectStatus>
         )
