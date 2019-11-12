@@ -9,3 +9,5 @@ export { default as Accordion } from './Accordion/Accordion';
 export { default as SectorPlot } from './SectorPlot/SectorPlot';
 
 export { default as Clustering } from './Clustering/Clustering';
+
+export { default as Markdown } from './Markdown/Markdown';

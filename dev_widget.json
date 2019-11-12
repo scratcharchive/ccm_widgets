@@ -54,6 +54,14 @@
             "arrow_length_factor": 0.3
         }
     },
+    "widget4": {
+        "type": "Markdown",
+        "title": "Markdown",
+        "key": "Markdown",
+        "props": {
+            "content": "# Test\n\nThis is a test"
+        }
+    },
     "widgets": [
         {
             "type": "Surface3d",

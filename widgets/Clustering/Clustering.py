@@ -119,11 +119,9 @@ class Clustering:
 
         alg_name = state.get('alg_name', 'none')
         alg_arguments = state.get('alg_arguments', dict())
-        kachery_config = state.get('kachery_config', None)
         args0 = alg_arguments.get(alg_name, {})
 
-        if kachery_config:
-            ka.set_config(**kachery_config)
+        ka.set_config(preset='default_readonly')
 
         dirname = os.path.dirname(os.path.realpath(__file__))
         fname = os.path.join(dirname, 'clustering_datasets.json')

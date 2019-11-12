@@ -9,3 +9,5 @@ from .Accordion import Accordion
 from .SectorPlot import SectorPlot
 
 from .Clustering import Clustering
+
+from .Markdown import Markdown
