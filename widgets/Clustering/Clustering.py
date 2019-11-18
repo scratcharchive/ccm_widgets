@@ -121,7 +121,7 @@ class Clustering:
         alg_arguments = state.get('alg_arguments', dict())
         args0 = alg_arguments.get(alg_name, {})
 
-        ka.set_config(preset='default_readonly')
+        ka.set_config(fr='default_readonly')
 
         dirname = os.path.dirname(os.path.realpath(__file__))
         fname = os.path.join(dirname, 'clustering_datasets.json')

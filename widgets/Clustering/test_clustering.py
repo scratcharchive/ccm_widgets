@@ -2,13 +2,6 @@ import kachery as ka
 import Clustering
 import numpy as np
 
-kachery_config=dict(
-    url='http://132.249.245.245:24342',
-    channel='public',
-    password='public',
-    download=True
-)
-
 path_data = 'sha1://cc6dbcd30a82dbdce756c9e2b27369bc7281755c/chang_pathbased.txt.conv'
 
 def _load_dataset_data(path):
@@ -41,7 +34,7 @@ def ALG_dpclus(X):
 
 
 def main():
-    ka.set_config(**kachery_config)
+    ka.set_config(fr='default_readonly')
     path2 = ka.load_file(path_data)
     data2 = _load_dataset_data(path2)
     labels2 = ALG_dpclus(data2)
